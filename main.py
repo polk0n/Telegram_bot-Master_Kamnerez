@@ -1,8 +1,10 @@
 import asyncio
 from create_bot import dp, bot
 import commands
+import handlers
 
 commands.register_handlers(dp)
+handlers.register_handlers(dp)
 
 
 async def main():
