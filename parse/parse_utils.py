@@ -70,7 +70,7 @@ def parse_links(pages: list) -> list:
             link = link.get('href')
             if "mm" in link \
                     or link.endswith(("37206", "72")) \
-                    or ("shkatulka-" in link and not "товарный" in link):
+                    or ("shkatulka-" in link and "товарный" not in link):
                 links.append(link)
     return links
 
