@@ -1,6 +1,3 @@
-import os
-import asyncio
-from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.orm import declarative_base
 from sqlalchemy import (
     Column,
@@ -8,7 +5,6 @@ from sqlalchemy import (
     String,
 )
 
-engine = create_async_engine(f"postgresql+asyncpg://postgres:{os.getenv('PSQL_PASS')}@localhost/kamnerez_db")
 Base = declarative_base()
 
 
@@ -27,11 +23,8 @@ class Product(Base):
         return f"{self.product_id}, {self.kind}, {self.material}, {self.size}, {self.photo}"
 
 
-async def models_init():
+async def models_init(engine):
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
         await conn.run_sync(Base.metadata.create_all)
-
-
-if __name__ == "__main__":
-    asyncio.run(models_init())
+        print("Tables have been initialized")
