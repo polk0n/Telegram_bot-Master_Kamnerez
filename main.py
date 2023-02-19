@@ -6,6 +6,9 @@ import commands
 import handlers
 from db.create_base import connect_database
 from db.models import models_init
+from db.base_utils import is_table_exist, filling_base
+from parse.goods import goods as goods
+from db.models import Product
 
 commands.register_handlers(dp)
 handlers.register_handlers(dp)
@@ -26,7 +29,10 @@ async def main():
         database="kamnerez_db",
         password=os.getenv("PSQL_PASS"))
     engine = create_async_engine(f"postgresql+asyncpg://postgres:{os.getenv('PSQL_PASS')}@localhost/kamnerez_db")
-    await models_init(engine=engine)
+    is_table = await is_table_exist(engine, Product)
+    if not is_table:
+        await models_init(engine)
+        await filling_base(engine, Product, goods)
     await bot_launch()
 
 
