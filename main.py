@@ -10,9 +10,6 @@ from db.base_utils import is_table_exist, filling_base
 from parse.goods import goods as goods
 from db.models import Product
 
-commands.register_handlers(dp)
-handlers.register_handlers(dp)
-
 
 async def bot_launch():
     print("The bot has been launched")
@@ -33,6 +30,8 @@ async def main():
     if not is_table:
         await models_init(engine)
         await filling_base(engine, Product, goods)
+    commands.register_handlers(dp)
+    handlers.register_handlers(dp)
     await bot_launch()
 
 
