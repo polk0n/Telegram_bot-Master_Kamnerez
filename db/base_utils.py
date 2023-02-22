@@ -1,6 +1,6 @@
 from sqlalchemy import select
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.exc import ProgrammingError
 
 
@@ -30,7 +30,7 @@ async def all_obj(engine, table) -> None:
                 print(items)
 
 
-async def group_obj(engine, table, group: str) -> None:
+async def display_group_obj(engine, table, group: str) -> None:
     """
     The function displays a group of objects from the database. Grouping by product type.
     Available groups: "шар", "яйцо", "шкатулка"
@@ -42,6 +42,27 @@ async def group_obj(engine, table, group: str) -> None:
             result = await session.execute(statement)
             for items in result.scalars().all():
                 print(items)
+
+
+async def get_group_obj(table, group: str) -> list:
+    """
+    The function returns a group of objects from the database. Grouping by product type.
+    Available groups: "шар", "яйцо", "шкатулка"
+    """
+    engine = create_async_engine(f"postgresql+asyncpg://postgres:GsDOGcOwJDmDYp@localhost/kamnerez_db")
+    async_session = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
+    async with async_session() as session:
+        async with session.begin():
+            if group == "Шары":
+                result = await session.execute(select(table).where(table.kind == "шар"))
+                products = result.scalars().all()
+            elif group == "Яйца":
+                result = await session.execute(select(table).where(table.kind == "яйцо"))
+                products = result.scalars().all()
+            elif group == "Шкатулки":
+                result = await session.execute(select(table).where(table.kind == "шкатулка"))
+                products = result.scalars().all()
+    return products
 
 
 def write_parse_data_to_database(goods: list[tuple[str, str, str, str, str | None, str]],
